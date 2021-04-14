@@ -2,170 +2,68 @@ from argparse import Namespace
 
 from .data import *
 
-'''
+
 def handle_list(
     args: Namespace,
-    group_id: str,
+    user_id: int,
+    group_id: int,
     is_admin: bool,
     is_superuser: bool,
 ) -> str:
-    message = ""
-
-    if args.store:
-        if is_superuser:
-            return get_store_pulgin_list()
-        else:
-            return "获取商店插件列表需要超级用户权限！"
-
-    if args.default:
-        if is_superuser:
-            group_id = "default"
-            message += "默认"
-        else:
-            return "获取默认插件列表需要超级用户权限！"
-
-    if args.private:
-        if is_superuser:
-            group_id = "0"
-            message += "私聊"
-        else:
-            return "获取私聊插件列表需要超级用户权限！"
-
-    if args.group:
-        if is_superuser:
-            group_id = args.group
-            message += f"群{args.group}"
-        else:
-            return "获取指定群插件列表需要超级用户权限！"
-
-    message += "插件列表如下：\n"
-    message += "\n".join(
-        f"[{'o' if get_group_plugin_list(group_id)[plugin] else 'x'}] {plugin}"
-        for plugin in get_group_plugin_list(group_id)
+    todo_list = get_todo_list(group_id=group_id)
+    if todo_list is None:
+        return "本群暂无待办事项列表!"
+    return "\n".join(
+        f"[{'o' if todo_list[job]['enable'] else 'x'}] {job}" for job in todo_list
     )
-    return message
 
 
-def handle_block(
+def handle_add(
     args: Namespace,
-    group_id: str,
+    user_id: int,
+    group_id: int,
     is_admin: bool,
     is_superuser: bool,
 ) -> str:
 
-    plugins = args.plugins
+    job = {args.name: {"cron": args.cron, "message": args.message, "enable": True}}
 
-    if not is_admin and not is_superuser:
-        return "管理插件需要群管理员权限！"
-
-    message = ""
-
-    if args.default:
-        if is_superuser:
-            group_id = "default"
-            message += "默认"
-        else:
-            return "管理默认插件需要超级用户权限！"
-    
-    if args.private:
-        if is_superuser:
-            group_id = "0"
-            message += "私聊"
-        else:
-            return "管理私聊插件需要超级用户权限！"
-
-    if args.group:
-        if is_superuser:
-            group_id = args.group
-            message += f"群{args.group}"
-        else:
-            return "管理指定群插件需要超级用户权限！"
-
-    if args.all:
-        plugins = get_group_plugin_list(group_id)
-
-    message += block_plugin(group_id, *plugins)
-    return message
+    add_todo_list(job, user_id=user_id, group_id=group_id)
 
 
-def handle_unblock(
+def handle_remove(
     args: Namespace,
-    group_id: str,
+    user_id: int,
+    group_id: int,
     is_admin: bool,
     is_superuser: bool,
 ) -> str:
 
-    plugins = args.plugins
+    job = args.name
 
-    if not is_admin and not is_superuser:
-        return "管理插件需要群管理员权限！"
-
-    message = ""
-
-    if args.default:
-        if is_superuser:
-            group_id = "default"
-            message += "默认"
-        else:
-            return "管理默认插件需要超级用户权限！"
-    
-    if args.private:
-        if is_superuser:
-            group_id = "0"
-            message += "私聊"
-        else:
-            return "管理私聊插件需要超级用户权限！"
-
-    if args.group:
-        if is_superuser:
-            group_id = args.group
-            message += f"群{args.group}"
-        else:
-            return "管理指定群插件需要超级用户权限！"
-
-    if args.all:
-        plugins = get_group_plugin_list(group_id)
-
-    message += unblock_plugin(group_id, *plugins)
-    return message
+    remove_todo_list(job, user_id=user_id, group_id=group_id)
 
 
-def handle_info(
+def handle_pause(
     args: Namespace,
-    group_id: str,
+    user_id: int,
+    group_id: int,
     is_admin: bool,
     is_superuser: bool,
 ) -> str:
 
-    if not is_admin and not is_superuser:
-        return "管理插件需要超级权限！"
+    job = args.name
 
-    return get_store_plugin_info(args.plugin)
+    pause_todo_list(job, user_id=user_id, group_id=group_id)
 
 
-def handle_install(
+def handle_resume(
     args: Namespace,
-    group_id: str,
+    user_id: int,
+    group_id: int,
     is_admin: bool,
     is_superuser: bool,
 ) -> str:
-    pass
+    job = args.name
 
-
-def handle_update(
-    args: Namespace,
-    group_id: str,
-    is_admin: bool,
-    is_superuser: bool,
-) -> str:
-    pass
-
-
-def handle_uninstall(
-    args: Namespace,
-    group_id: str,
-    is_admin: bool,
-    is_superuser: bool,
-) -> str:
-    pass
-'''
+    resume_todo_list(job, user_id=user_id, group_id=group_id)
