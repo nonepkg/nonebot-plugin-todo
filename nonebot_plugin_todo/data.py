@@ -114,14 +114,14 @@ def _update_todo_list(
     elif type == "remove":
         tmp_todo_list.pop(job)
     elif type == "pause":
-        tmp_todo_list[job]["enbale"] = False
+        tmp_todo_list[job]["enable"] = False
     elif type == "resume":
-        tmp_todo_list[job]["enbale"] = True
+        tmp_todo_list[job]["enable"] = True
 
     if user_id:
-        todo_list["user"][user_id].update(tmp_todo_list)
+        todo_list["user"][user_id] = tmp_todo_list
     elif group_id:
-        todo_list["group"][group_id].update(tmp_todo_list)
+        todo_list["group"][group_id] = tmp_todo_list
 
     _dump_todo_list(todo_list)
 
