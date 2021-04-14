@@ -3,6 +3,7 @@ from nonebot_plugin_todo.data import get_todo_list
 from nonebot.plugin import on_shell_command, require
 from nonebot.typing import T_State
 from nonebot.adapters.cqhttp import (
+    unescape,
     Bot,
     Event,
     Message,
@@ -43,6 +44,8 @@ async def _(bot: Bot, event: Event, state: T_State):
     is_admin = _is_admin(event)
     is_superuser = _is_superuser(bot, event)
     if hasattr(args, "handle"):
+        if hasattr(args, "message"):
+            args.message = unescape(args.message)
         await todo.finish(args.handle(args, user_id, group_id, is_admin, is_superuser))
 
 

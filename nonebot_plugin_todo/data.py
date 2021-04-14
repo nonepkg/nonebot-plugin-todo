@@ -48,19 +48,20 @@ def get_todo_list(
     todo_list = _load_todo_list()
 
     if user_id:
-        tmp_todo_list=todo_list["user"]
+        tmp_todo_list = todo_list["user"]
         if user_id not in tmp_todo_list:
-            todo_list["user"][user_id]={}
+            todo_list["user"][user_id] = {}
         _dump_todo_list(todo_list)
         return tmp_todo_list[user_id]
     elif group_id:
-        tmp_todo_list=todo_list["group"]
+        tmp_todo_list = todo_list["group"]
         if group_id not in tmp_todo_list:
-            todo_list["group"][group_id]={}
+            todo_list["group"][group_id] = {}
         _dump_todo_list(todo_list)
         return tmp_todo_list[group_id]
     else:
         return todo_list
+
 
 def add_todo_list(
     job: Dict[str, Any],
@@ -101,18 +102,18 @@ def _update_todo_list(
     user_id: Optional[int] = None,
     group_id: Optional[int] = None,
 ):
-    todo_list=_load_todo_list()
+    todo_list = _load_todo_list()
 
     if user_id:
-        tmp_todo_list=todo_list["user"]
+        tmp_todo_list = todo_list["user"]
         if user_id not in tmp_todo_list:
-            todo_list["user"]["user_id"]={}
+            todo_list["user"]["user_id"] = {}
         tmp_todo_list = tmp_todo_list[user_id]
     elif group_id:
-        tmp_todo_list=todo_list["group"]
+        tmp_todo_list = todo_list["group"]
         if group_id not in tmp_todo_list:
-            todo_list["group"][group_id]={}
-        tmp_todo_list=tmp_todo_list[group_id]
+            todo_list["group"][group_id] = {}
+        tmp_todo_list = tmp_todo_list[group_id]
 
     if type == "add":
         tmp_todo_list.update(job)

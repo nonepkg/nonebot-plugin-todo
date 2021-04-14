@@ -11,7 +11,7 @@ def handle_list(
     is_superuser: bool,
 ) -> str:
     todo_list = get_todo_list(group_id=group_id)
-    if todo_list is None:
+    if todo_list is {}:
         return "本群暂无待办事项列表!"
     return "\n".join(
         f"[{'o' if todo_list[job]['enable'] else 'x'}] {job}" for job in todo_list
