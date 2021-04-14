@@ -41,6 +41,20 @@ git clone https://github.com/Jigsaw111/nonebot_plugin_todo.git
 
 **使用前请先确保命令前缀为空，否则请在以下命令前加上命令前缀 (默认为 `/` )。**
 
+- `todo list` 查看当前会话（群/私聊）的待办事项列表
+
+- `todo add job cron message` 新增待办事项
+
+- - `job` 作业名，每个会话不能存在两个相同的作业名
+- - `cron` crond 表达式，需用 "" 包裹，例如 "\* \* \* \* \*" 表示每分钟
+- - `message` 要定时发送的消息，支持 CQ 码，必要时需用 "" 包裹
+
+- `todo remove job` 删除待办事项
+
+- `todo pause job` 暂停待办事项
+
+- `todo resume job` 恢复待办事项
+
 ### Q&A
 
 - **这是什么？**  
@@ -57,6 +71,7 @@ git clone https://github.com/Jigsaw111/nonebot_plugin_todo.git
 
 ### Changelog
 
+- 210414，完成基本功能，发布 0.1.0 版本。
 - 210412，创建项目。
 
 </details>
