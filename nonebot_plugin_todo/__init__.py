@@ -34,6 +34,14 @@ async def _():
                         group_id=group_id,
                         message=Message(todo_list["group"][group_id][job]["message"]),
                     )
+    for user_id in todo_list["user"]:
+        for job in todo_list["user"][user_id]:
+            if check_time(todo_list["user"][user_id][job]):
+                for bot in bots:
+                    await bots[bot].send_msg(
+                        user_id=user_id,
+                        message=Message(todo_list["user"][user_id][job]["message"]),
+                    )
 
 
 @todo.handle()

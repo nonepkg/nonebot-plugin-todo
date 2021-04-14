@@ -9,12 +9,14 @@ _DATA_PATH = Path() / "data" / "todo" / "todo_list.yml"
 def format_crontab(crontab: str, default: List[int]) -> List[int]:
     if crontab == "*":
         return default
-    if "," in crontab:
+    elif "," in crontab:
         return list(int(i) for i in crontab.split(","))
-    if "-" in crontab:
+    elif "-" in crontab:
         return list(range(int(crontab.split("-")[0]), int(crontab.split("-")[0]) + 1))
-    if "/" in crontab:
+    elif "/" in crontab:
         return list(filter(lambda x: x % int(crontab[3:]) == 0, default))
+    else:
+        return [int(crontab)]
 
 
 def check_time(job: Dict[str, Any]) -> bool:
@@ -48,19 +50,19 @@ def get_todo_list(
     todo_list = _load_todo_list()
 
     if user_id:
-        tmp_todo_list = todo_list["user"]
-        if user_id not in tmp_todo_list:
+        if user_id not in todo_list["user"]:
             todo_list["user"][user_id] = {}
-        _dump_todo_list(todo_list)
-        return tmp_todo_list[user_id]
+        tmp_todo_list = todo_list["user"][user_id]
     elif group_id:
-        tmp_todo_list = todo_list["group"]
-        if group_id not in tmp_todo_list:
+        if group_id not in todo_list["group"]:
             todo_list["group"][group_id] = {}
-        _dump_todo_list(todo_list)
-        return tmp_todo_list[group_id]
+        tmp_todo_list = todo_list["group"][group_id]
     else:
-        return todo_list
+        tmp_todo_list = todo_list
+
+    _dump_todo_list(todo_list)
+
+    return tmp_todo_list
 
 
 def add_todo_list(
@@ -102,18 +104,10 @@ def _update_todo_list(
     user_id: Optional[int] = None,
     group_id: Optional[int] = None,
 ):
-    todo_list = _load_todo_list()
 
-    if user_id:
-        tmp_todo_list = todo_list["user"]
-        if user_id not in tmp_todo_list:
-            todo_list["user"]["user_id"] = {}
-        tmp_todo_list = tmp_todo_list[user_id]
-    elif group_id:
-        tmp_todo_list = todo_list["group"]
-        if group_id not in tmp_todo_list:
-            todo_list["group"][group_id] = {}
-        tmp_todo_list = tmp_todo_list[group_id]
+    tmp_todo_list = get_todo_list(user_id, group_id)
+
+    todo_list = get_todo_list()
 
     if type == "add":
         tmp_todo_list.update(job)
