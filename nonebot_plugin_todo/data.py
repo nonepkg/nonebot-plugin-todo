@@ -140,4 +140,5 @@ def _dump_todo_list(todo_list: Dict[str, Any]):
     yaml.dump(
         todo_list,
         _DATA_PATH.open("w", encoding="utf-8"),
+        allow_unicode=True,
     )

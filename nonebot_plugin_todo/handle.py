@@ -10,9 +10,9 @@ def handle_list(
     is_admin: bool,
     is_superuser: bool,
 ) -> str:
-    todo_list = get_todo_list(group_id=group_id)
-    if todo_list is {}:
-        return "本群暂无待办事项列表!"
+    todo_list = get_todo_list(user_id, group_id)
+    if todo_list == {}:
+        return "当前会话暂无待办事项列表!"
     return "\n".join(
         f"[{'o' if todo_list[job]['enable'] else 'x'}] {job}" for job in todo_list
     )
@@ -26,7 +26,7 @@ def handle_add(
     is_superuser: bool,
 ) -> str:
 
-    job = {args.name: {"cron": args.cron, "message": args.message, "enable": True}}
+    job = {args.job: {"cron": args.cron, "message": args.message, "enable": True}}
 
     add_todo_list(job, user_id=user_id, group_id=group_id)
 
@@ -39,7 +39,7 @@ def handle_remove(
     is_superuser: bool,
 ) -> str:
 
-    job = args.name
+    job = args.job
 
     remove_todo_list(job, user_id=user_id, group_id=group_id)
 
@@ -52,7 +52,7 @@ def handle_pause(
     is_superuser: bool,
 ) -> str:
 
-    job = args.name
+    job = args.job
 
     pause_todo_list(job, user_id=user_id, group_id=group_id)
 
@@ -64,6 +64,6 @@ def handle_resume(
     is_admin: bool,
     is_superuser: bool,
 ) -> str:
-    job = args.name
+    job = args.job
 
     resume_todo_list(job, user_id=user_id, group_id=group_id)
