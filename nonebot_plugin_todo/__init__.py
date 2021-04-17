@@ -44,7 +44,6 @@ async def _(bot: Bot, event: Event, state: T_State):
         if isinstance(event, GroupMessageEvent)
         else False
     )
-    args.is_superuser = str(event.user_id) in bot.config.superusers
     if hasattr(args, "message"):
         args.message = unescape(args.message)
 

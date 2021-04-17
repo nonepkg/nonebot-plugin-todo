@@ -20,36 +20,45 @@ def handle_list(args: Namespace) -> Namespace:
 
 def handle_add(args: Namespace) -> Namespace:
 
-    add_todo_list({args.job: {"cron": args.cron, "message": args.message, "enable": True}}, args.user_id, args.group_id)
+    if args.group_id and not args.is_admin:
+        args.message = "管理待办事项列表需要群管理员权限！"
+    else:
+        add_todo_list({args.job: {"cron": args.cron, "message": args.message, "enable": True}}, args.user_id, args.group_id)
 
-    args.message = f"定时消息 {args.job} 添加成功！"
+        args.message = f"待办事项 {args.job} 添加成功！"
 
     return args
 
 
 def handle_remove(args: Namespace) -> Namespace:
 
-    remove_todo_list(args.job, args.user_id, args.group_id)
-
-    args.message = f"定时消息 {args.job} 删除成功！"
+    if args.group_id and not args.is_admin:
+        args.message = "管理待办事项列表需要群管理员权限！"
+    else:
+        remove_todo_list(args.job, args.user_id, args.group_id)
+        args.message = f"待办事项 {args.job} 删除成功！"
 
     return args
 
 
 def handle_pause(args: Namespace) -> Namespace:
 
-    pause_todo_list(args.job, args.user_id, args.group_id)
-
-    args.message = f"定时消息 {args.job} 暂停成功！"
+    if args.group_id and not args.is_admin:
+        args.message = "管理待办事项列表需要群管理员权限！"
+    else:
+        pause_todo_list(args.job, args.user_id, args.group_id)
+        args.message = f"待办事项 {args.job} 暂停成功！"
 
     return args
 
 
 def handle_resume(args: Namespace) -> Namespace:
 
-    resume_todo_list(args.job, args.user_id, args.group_id)
-
-    args.message = f"定时消息 {args.job} 恢复成功！"
+    if args.group_id and not args.is_admin:
+        args.message = "管理待办事项列表需要群管理员权限！"
+    else:
+        resume_todo_list(args.job, args.user_id, args.group_id)
+        args.message = f"待办事项 {args.job} 恢复成功！"
 
     return args
 

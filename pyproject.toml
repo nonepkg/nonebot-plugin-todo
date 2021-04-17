@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot_plugin_todo"
-version = "0.1.4"
+version = "0.1.5"
 description = "Simple ToDoList plugin for Nonebot"
 authors = ["Jigsaw <j1g5aw@foxmail.com>"]
 license = "MIT"
