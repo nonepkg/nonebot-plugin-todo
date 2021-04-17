@@ -1,5 +1,3 @@
-from typing import Optional
-from nonebot_plugin_todo.data import get_todo_list
 from nonebot.plugin import on_shell_command, require
 from nonebot.typing import T_State
 from nonebot.adapters.cqhttp import (
@@ -12,8 +10,7 @@ from nonebot.adapters.cqhttp import (
 )
 from nonebot import get_bots
 
-from .data import check_time
-from .parser import todo_parser
+from .parser import todo_parser, handle_scheduler
 
 scheduler = require("nonebot_plugin_apscheduler").scheduler
 
@@ -23,56 +20,39 @@ todo = on_shell_command("todo", parser=todo_parser, priority=5)
 # 每分钟进行一次检测
 @scheduler.scheduled_job("cron", minute="*", id="todo")
 async def _():
+
     bots = get_bots()
-    todo_list = get_todo_list()
 
-    for group_id in todo_list["group"]:
-        for job in todo_list["group"][group_id]:
-            if check_time(todo_list["group"][group_id][job]):
-                for bot in bots:
-                    await bots[bot].send_msg(
-                        group_id=group_id,
-                        message=Message(todo_list["group"][group_id][job]["message"]),
-                    )
+    args = handle_scheduler()
 
-    for user_id in todo_list["user"]:
-        for job in todo_list["user"][user_id]:
-            if check_time(todo_list["user"][user_id][job]):
-                for bot in bots:
-                    await bots[bot].send_msg(
-                        user_id=user_id,
-                        message=Message(todo_list["user"][user_id][job]["message"]),
-                    )
+    for bot in bots.values():
+        for job in args.jobs:
+            await bot.send_msg(
+                user_id=job["user_id"],
+                group_id=job["group_id"],
+                message=Message(job["message"]),
+            )
 
 
 @todo.handle()
 async def _(bot: Bot, event: Event, state: T_State):
     args = state["args"]
-    user_id = _get_user_id(event)
-    group_id = _get_group_id(event)
-    is_admin = _is_admin(event)
-    is_superuser = _is_superuser(bot, event)
-    if hasattr(args, "handle"):
-        if hasattr(args, "message"):
-            args.message = unescape(args.message)
-        await todo.finish(args.handle(args, user_id, group_id, is_admin, is_superuser))
-
-
-def _get_group_id(event: Event) -> Optional[int]:
-    return event.group_id if isinstance(event, GroupMessageEvent) else None
-
-
-def _get_user_id(event: Event) -> Optional[int]:
-    return event.user_id if isinstance(event, PrivateMessageEvent) else None
-
-
-def _is_admin(event: Event) -> bool:
-    return (
+    args.user_id = event.user_id if isinstance(event, PrivateMessageEvent) else None
+    args.group_id = event.group_id if isinstance(event, GroupMessageEvent) else None
+    args.is_admin = (
         event.sender.role in ["admin", "owner"]
         if isinstance(event, GroupMessageEvent)
         else False
     )
+    args.is_superuser = str(event.user_id) in bot.config.superusers
+    if hasattr(args, "message"):
+        args.message = unescape(args.message)
 
-
-def _is_superuser(bot: Bot, event: Event) -> bool:
-    return str(event.user_id) in bot.config.superusers
+    if hasattr(args, "handle"):
+        args = args.handle(args)
+        if args.message:
+            await bot.send_msg(
+                user_id=args.user_id,
+                group_id=args.group_id,
+                message=Message(args.message),
+            )
